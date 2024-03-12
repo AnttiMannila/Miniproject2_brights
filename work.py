@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def preprocess_solar_radiation_data(df):
     df['Date'] = pd.to_datetime(df[['Year', 'Month', 'Day']])
