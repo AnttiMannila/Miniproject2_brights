@@ -23,7 +23,7 @@ if __name__ == "__main__":
         temp_snow_df = wk.preprocess_temperature_and_snow_depth_data(temp_snow_df)
         cloud_coverage_df = pd.read_csv(cloud_coverage_file)
         cloud_coverage_df = wk.preprocess_cloud_coverage_data(cloud_coverage_df)
-        final_df = wk.join_dataframes(solar_radiation_df, temp_snow_df, cloud_coverage_df)
+        final_df = wk.join_dataframes(solar_radiation_df, temp_snow_df, cloud_coverage_df, i)
         output_file = os.path.join(os.getcwd() + f"\\Finished_CSVs\\{i}_combined_data.csv")
         if os.path.exists(output_file):
             os.remove(output_file)
