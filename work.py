@@ -48,7 +48,7 @@ def fix_value_types():
     for file in finished_csvs:
         i = os.path.join(os.getcwd(), "Working", file)
         df = pd.read_csv(i)
-        df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d', errors='coerce')
+        df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d', errors='coerce') # This doesn't seem to work as intended, no idea why
         df = df.sort_values('Date')
         df['Average temperature [°C]'] = pd.to_numeric(df['Average temperature [°C]'], errors='coerce')
         df['Snow depth [cm]'] = pd.to_numeric(df['Snow depth [cm]'], errors='coerce') 
