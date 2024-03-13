@@ -17,27 +17,24 @@ def preprocess_cloud_coverage_data(df):
     df.drop(columns=['Observation station', 'Year', 'Month', 'Day', 'Time [Local time]'], inplace=True)
     return df
 
-def join_dataframes(solar_df, temp_snow_df, cloud_coverage_df):
+def join_dataframes(solar_df, temp_snow_df, cloud_coverage_df, venue):
     merged_df = pd.merge(solar_df, temp_snow_df, on='Date', how='inner')
     merged_df = pd.merge(merged_df, cloud_coverage_df, on='Date', how='inner')
-    merged_df = merged_df[['Date', 'Average temperature [°C]', 'Snow depth [cm]', 'Cloud cover [1/8]', 'Direct solar radiation mean [W/m2]']]
+    merged_df['Venue'] = f"{venue}"
+    merged_df = merged_df[['Date', 'Venue', 'Average temperature [°C]', 'Snow depth [cm]', 'Cloud cover [1/8]', 'Direct solar radiation mean [W/m2]']]
     return merged_df
 
+def count_nulls():
+    finished_csvs = os.listdir(os.path.join(os.getcwd(), "Finished_CSVs"))
+    for i in finished_csvs:
+        file = os.path.join(os.getcwd(), "Finished_CSVs", i)
+        df = pd.read_csv(file)
+        print()
+        print(file)
+        print(df.isnull().sum())
+        print(len(df))
+
 # print(os.getcwd())
-
-# Check for null value amounts per final csv
-
-# venues = []
-# folders = os.listdir(os.path.join(os.getcwd(), "CSVs"))
-# for folder in folders:
-#     folder_path = os.path.join(os.getcwd(), "CSVs", folder)
-#     if os.path.isdir(folder_path):
-#         venues.append(folder)
-# for i in venues:
-#     df = pd.read_csv(os.getcwd() + f"\\CSVs\\{i}" + '\\combined_data.csv')
-#     print()
-#     print(i)
-#     print(df.isnull().sum())
 
 # Check for length of the concatenated solar radiation file (fixed now, unnecessary probably)
 
