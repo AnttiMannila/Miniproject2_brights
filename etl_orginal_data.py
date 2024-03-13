@@ -43,7 +43,10 @@ def concat_venue_and_radiation(venue_name):
     for file in venue_files:
         df = pd.read_csv(file)
         df.drop(columns=['Observation station'], inplace=True)
-        df['Cloud cover [1/8]'] = df['Cloud cover [1/8]'].str.extract(r'(\d+)').astype(float)
+        try:
+            df['Cloud cover [1/8]'] = df['Cloud cover [1/8]'].str.extract(r'(\d+)').astype(float)
+        except:
+            df['Cloud cover [1/8]'] = df['Cloud cover[1/8]'].str.extract(r'(\d+)').astype(float)
         dfs.append(df)
     
     venue_df = pd.concat(dfs, ignore_index=True)
@@ -56,10 +59,16 @@ def concat_venue_and_radiation(venue_name):
 
     venue.sort_values(by=['Year', 'Month', 'Day'], inplace=True)
     venue = pd.merge(pd.merge(venue, venue_df, on=['Year', 'Month', 'Day']), radiation, on=['Year', 'Month', 'Day'])
-    venue.drop(columns=['Unnamed: 0', 'Time [Local time]'], axis=1, inplace=True)
+    try:
+        venue.drop(columns=['Unnamed: 0', 'Time [Local time]'], axis=1, inplace=True)
+    except:
+        venue.drop(columns=['Unnamed: 0_x', 'Time [Local time]', 'Unnamed: 0_y'], axis=1, inplace=True)
     venue.to_csv(f'{venue_name}.csv')
     
     
 if __name__ == '__main__':
-    radiation_to_one_file()
-    concat_venue_and_radiation('Vihti')
+    
+    list_of_venues = ['Ilomantsi']
+    # radiation_to_one_file()
+    for i in list_of_venues:
+        concat_venue_and_radiation(i)
