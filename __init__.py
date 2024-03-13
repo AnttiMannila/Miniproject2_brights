@@ -24,12 +24,15 @@ if __name__ == "__main__":
         cloud_coverage_df = pd.read_csv(cloud_coverage_file)
         cloud_coverage_df = wk.preprocess_cloud_coverage_data(cloud_coverage_df)
         final_df = wk.join_dataframes(solar_radiation_df, temp_snow_df, cloud_coverage_df, i)
-        output_file = os.path.join(os.getcwd() + f"\\Finished_CSVs\\{i}_combined_data.csv")
+        output_file = os.path.join(os.getcwd() + f"\\Finished_CSVs\\{i}_finished.csv")
         if os.path.exists(output_file):
             os.remove(output_file)
         final_df.to_csv(output_file, index=False)
         print(f"Combined data saved to: {output_file}")
-        wk.count_nulls()
+        wk.fix_value_types()
+    wk.count_nulls()
+    wk.check_value_types()
+
 
 end_time = time.time()
 print(f"The script took {end_time - start_time} seconds.")
