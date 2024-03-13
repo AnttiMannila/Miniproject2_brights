@@ -17,3 +17,6 @@ The preprocessed CSV's are basically the avg temp & snowdepth per venue, the clo
 work.py has the functions
 
 salpausselkädataconcat.py is for posterity to see what was done with the salpausselkä data initially, this can be ignored
+
+calculatedailymeansforcloudcoverage.py is the script used to calculate the daily means from momentary observation data regarding cloud coverage
+It has to be manually set to find the files, although it could be automated easily provided the input files are standardized
