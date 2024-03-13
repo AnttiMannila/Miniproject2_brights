@@ -29,6 +29,7 @@ if __name__ == "__main__":
             os.remove(output_file)
         final_df.to_csv(output_file, index=False)
         print(f"Combined data saved to: {output_file}")
+        wk.count_nulls()
 
 end_time = time.time()
 print(f"The script took {end_time - start_time} seconds.")
