@@ -5,20 +5,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import mean_squared_error, r2_score
 
 path = os.getcwd()
 file_path = f"{path}\\data\\"
 trainingvenues = ['Himos', 'Kilpisjärvi', 'Levi', 'Pyhä'] #Change this to choose venues to train from
-testingvenues = ['Sveitsi']
 
 for i in trainingvenues:
     file = f"{file_path}\\data\\{i}.csv"
     df = pd.read_csv(file)
     dataset = pd.concat(df)
 dataset = pd.DataFrame(dataset)
-dataset = dataset.dropna(axis= 0, how='any')
+dataset = dataset.dropna(axis=0, how='any')
 
 dataset['Date'] = pd.to_datetime(dataset['Date'])
 dataset['Weeknr'] = dataset['Date'].dt.isocalendar().week
@@ -28,22 +28,7 @@ dataset.drop(columns='Date')
 y = dataset['Snow depth [cm]']
 X = dataset[['Weeknr', 'Average temperature [°C]', 'Cloud cover [1/8]','Direct solar radiation mean [W/m2]']]
 
-for i in testingvenues:
-    file = f"{file_path}\\data\\{i}.csv"
-    df = pd.read_csv(file)
-    dataset2 = pd.concat(df)
-dataset2 = pd.DataFrame(dataset2)
-dataset2 = dataset2.dropna(axis= 0, how='any')
-
-dataset2['Date'] = pd.to_datetime(dataset2['Date'])
-dataset2['Weeknr'] = dataset2['Date'].dt.isocalendar().week
-dataset2['Snow depth [cm]'] = dataset2['Snow depth [cm]'].replace(-1, 0)
-dataset2.drop(columns='Date')
-
-X_train = X
-y_train = y
-X_test = dataset2[['Weeknr', 'Average temperature [°C]', 'Cloud cover [1/8]','Direct solar radiation mean [W/m2]']]
-y_test = dataset2['Snow depth [cm]']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
 model_linear = LinearRegression()
 model_linear.fit(X_train, y_train)
