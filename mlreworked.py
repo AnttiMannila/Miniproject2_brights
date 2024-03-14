@@ -12,10 +12,12 @@ from sklearn.metrics import mean_squared_error, r2_score
 path = os.getcwd()
 trainingvenues = ['Himos', 'Kilpisjärvi', 'Levi', 'Pyhä'] #Change this to choose venues to train from
 
+dfs = []
 for i in trainingvenues:
     file = f"{path}\\{i}.csv"
     df = pd.read_csv(file)
-    dataset = pd.concat(df)
+    dfs.append(df)
+dataset = pd.concat(dfs, ignore_index=True)
 dataset = pd.DataFrame(dataset)
 dataset = dataset.dropna(axis=0, how='any')
 
