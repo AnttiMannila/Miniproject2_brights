@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, r2_score
 
 path = os.getcwd()
-testingvenues = ['Levi']
+testingvenues = ['Ilomantsi']
 
 with open(f"{path}\\linear.pkl", "rb") as file:
     model_linear = pkl.load(file)
@@ -13,24 +13,33 @@ with open(f"{path}\\linear.pkl", "rb") as file:
 with open(f"{path}\\polynomial2.pkl", "rb")as file:
     model_polynomial2 = pkl.load(file)
 
-with open(f"{path}\\polynomial23.pkl", "rb")as file:
+with open(f"{path}\\polynomial3.pkl", "rb")as file:
     model_polynomial3 = pkl.load(file)
 
-with open(f"{path}\\polynomial26.pkl", "rb")as file:
+with open(f"{path}\\polynomial6.pkl", "rb")as file:
     model_polynomial6 = pkl.load(file)
 
+dfs = []
 for i in testingvenues:
-    file = f"{path}\\data\\{i}.csv"
+    file = f"{path}\\{i}.csv"
     df = pd.read_csv(file)
-    dataset = pd.concat(df)
-dataset = dataset.dropna(axis= 0, how='any')
-dataset['Date'] = pd.to_datetime(dataset[['Year', 'Month', 'Day']])
+    dfs.append(df)
+    print(df)
+dataset = pd.concat(dfs, ignore_index=True)
+dataset = pd.DataFrame(dataset)
+dataset = dataset.dropna(axis=0, how='any')
+dataset['Date'] = pd.to_datetime(dataset['Date'])
 dataset['Weeknr'] = dataset['Date'].dt.isocalendar().week
 dataset['Snow depth [cm]'] = dataset['Snow depth [cm]'].replace(-1, 0)
-dataset.drop(columns=['Date', 'Year', 'Month', 'Day'])
+dataset.drop(columns='Date', inplace=True)
+
+print(dataset)
+
 
 y = dataset['Snow depth [cm]']
 X = dataset[['Weeknr', 'Average temperature [°C]','Cloud cover [1/8]','Direct solar radiation mean [W/m2]']]
+
+print(X.shape)
 
 predictions_linear = model_linear.predict(X)
 predictions_polynomial2 = model_polynomial2.predict(X)
