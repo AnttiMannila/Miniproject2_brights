@@ -76,6 +76,10 @@ def concat_venue_and_radiation(venue_name):
         venue.drop(columns=['Unnamed: 0', 'Time [Local time]'], axis=1, inplace=True)
     except:
         venue.drop(columns=['Unnamed: 0_x', 'Time [Local time]', 'Unnamed: 0_y'], axis=1, inplace=True)
+    
+    venue['Date'] = pd.to_datetime(venue[['Year', 'Month', 'Day']])
+    venue.drop(columns= ['Year', 'Month', 'Day'], inplace=True)
+    venue = pd.concat([venue.iloc[:, -1], venue.iloc[:, :-1]], axis=1)
     venue.to_csv(f'{venue_name}.csv')
     
     
