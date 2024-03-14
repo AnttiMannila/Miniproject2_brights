@@ -18,8 +18,9 @@ def radiation_to_one_file():
         df = pd.read_csv(file)
         dfs.append(df)
 
-    # concat files and drop unneccary columns
+    # concat files and drop unneccary columns and change datatypes
     solar_radiation_df = pd.concat(dfs, ignore_index=True)
+    solar_radiation_df['Direct solar radiation mean [W/m2]'] = pd.to_numeric(solar_radiation_df['Direct solar radiation mean [W/m2]'], errors='coerce')
     solar_radiation_df.sort_values(by=['Year', 'Month', 'Day'], inplace=True)
     just_radiation_df = solar_radiation_df.drop(columns=['Observation station', 'Time [Local time]'])
     
@@ -57,6 +58,18 @@ def concat_venue_and_radiation(venue_name):
     selected_venue = glob.glob(os.path.join(venue_path, "*.csv"))
     venue = pd.read_csv(selected_venue[0])
 
+    # Datatype changes
+    # Snow depth
+   
+    venue['Snow depth [cm]'] = venue['Snow depth [cm]'].str.replace(',', '.').replace('-1', '0')
+    venue['Snow depth [cm]'] = pd.to_numeric(venue['Snow depth [cm]'], errors='coerce')
+
+    #average temperature
+    try:
+        venue['Average temperature [°C]'] = pd.to_numeric(venue['Average temperature [°C]'], errors='coerce')
+    except:
+        pass
+
     venue.sort_values(by=['Year', 'Month', 'Day'], inplace=True)
     venue = pd.merge(pd.merge(venue, venue_df, on=['Year', 'Month', 'Day']), radiation, on=['Year', 'Month', 'Day'])
     try:
@@ -68,7 +81,7 @@ def concat_venue_and_radiation(venue_name):
     
 if __name__ == '__main__':
     
-    list_of_venues = ['Ilomantsi']
-    # radiation_to_one_file()
+    list_of_venues = ['Himos','Ilomantsi','Kilpisjärvi','Levi','Pyhä', 'Ruka', 'Salpausselkä', 'Sveitsi', 'Tahko', 'Vihti']
+    radiation_to_one_file()
     for i in list_of_venues:
         concat_venue_and_radiation(i)
