@@ -22,12 +22,23 @@ dataset = pd.DataFrame(dataset)
 # dataset = dataset[dataset['Average temperature [°C]'] <= 5]
 dataset = dataset.dropna(axis= 0, how='any')
 
+# Tried some labeling stuff
+# def assign_label(depth):
+#     if depth < 10:
+#         return 0
+#     elif depth < 20:
+#         return 10
+#     else:
+#         return 20
+
 dataset['Date'] = pd.to_datetime(dataset['Date'])
 dataset['Weeknr'] = dataset['Date'].dt.isocalendar().week
 dataset['Snow depth [cm]'] = dataset['Snow depth [cm]'].replace(-1, 0)
+#dataset['Snow depth [cm] label'] = dataset['Snow depth [cm]'].apply(lambda x: assign_label(x)) #labeling stuff
 dataset.drop(columns='Date')
 
 y = dataset['Snow depth [cm]']
+# y = dataset['Snow depth [cm] label'] #labeling stuff
 X = dataset[['Weeknr', 'Average temperature [°C]', 'Cloud cover [1/8]','Direct solar radiation mean [W/m2]']]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
@@ -50,7 +61,7 @@ with open(CURR_DIR_PATH + "\\Models\\linear.pkl", 'wb') as file:
     pkl.dump(model_linear, file)
 
 models = {}
-for i in [2, 3 ,6]:
+for i in [2, 3, 6]:
     model = make_pipeline(PolynomialFeatures(i), LinearRegression())
     model.fit(X_train, y_train)
     models[i] = model
