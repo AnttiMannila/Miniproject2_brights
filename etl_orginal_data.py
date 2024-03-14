@@ -2,33 +2,6 @@ import pandas as pd
 import os
 import glob
 
-def radiation_to_one_file():
-    '''This function will concat solar radiation files together'''
-    
-    #Create path to the working folder
-    path = os.getcwd()
-    solar_path = f"{path}\\solar_data"
-    csv_files = glob.glob(os.path.join(solar_path, "*.csv"))
-
-
-    # going through files
-    dfs =[]
-
-    for file in csv_files:
-        df = pd.read_csv(file)
-        dfs.append(df)
-
-    # concat files and drop unneccary columns and change datatypes
-    solar_radiation_df = pd.concat(dfs, ignore_index=True)
-    solar_radiation_df['Direct solar radiation mean [W/m2]'] = pd.to_numeric(solar_radiation_df['Direct solar radiation mean [W/m2]'], errors='coerce')
-    solar_radiation_df.sort_values(by=['Year', 'Month', 'Day'], inplace=True)
-    just_radiation_df = solar_radiation_df.drop(columns=['Observation station', 'Time [Local time]'])
-    
-    #make CSV files
-    solar_radiation_df.to_csv('direct_solar_radiation_2004_2024.csv')
-    just_radiation_df.to_csv('direct_solar_radiation_2004_2024_values.csv')
-
-
 def concat_venue_and_radiation(venue_name):
 
     '''this function will concat all the files on wanted venue'''
@@ -72,6 +45,8 @@ def concat_venue_and_radiation(venue_name):
 
     venue.sort_values(by=['Year', 'Month', 'Day'], inplace=True)
     venue = pd.merge(pd.merge(venue, venue_df, on=['Year', 'Month', 'Day']), radiation, on=['Year', 'Month', 'Day'])
+    
+    venue['Direct solar radiation mean [W/m2]'] = pd.to_numeric(venue['Direct solar radiation mean [W/m2]'], errors='coerce')
     try:
         venue.drop(columns=['Unnamed: 0', 'Time [Local time]'], axis=1, inplace=True)
     except:
@@ -80,12 +55,10 @@ def concat_venue_and_radiation(venue_name):
     venue['Date'] = pd.to_datetime(venue[['Year', 'Month', 'Day']])
     venue.drop(columns= ['Year', 'Month', 'Day'], inplace=True)
     venue = pd.concat([venue.iloc[:, -1], venue.iloc[:, :-1]], axis=1)
-    venue.to_csv(f'{venue_name}.csv')
-    
+    venue.to_csv(f'{venue_name}.csv', index=False)
     
 if __name__ == '__main__':
-    
     list_of_venues = ['Himos','Ilomantsi','Kilpisjärvi','Levi','Pyhä', 'Ruka', 'Salpausselkä', 'Sveitsi', 'Tahko', 'Vihti']
-    radiation_to_one_file()
     for i in list_of_venues:
         concat_venue_and_radiation(i)
+        print("Ready!")
