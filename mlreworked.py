@@ -10,11 +10,10 @@ from sklearn.pipeline import make_pipeline
 from sklearn.metrics import mean_squared_error, r2_score
 
 path = os.getcwd()
-file_path = f"{path}\\data\\"
 trainingvenues = ['Himos', 'Kilpisjärvi', 'Levi', 'Pyhä'] #Change this to choose venues to train from
 
 for i in trainingvenues:
-    file = f"{file_path}\\data\\{i}.csv"
+    file = f"{path}\\{i}.csv"
     df = pd.read_csv(file)
     dataset = pd.concat(df)
 dataset = pd.DataFrame(dataset)
