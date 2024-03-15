@@ -10,6 +10,9 @@ testingvenues = ['Ilomantsi']
 with open(f"{path}\\linear.pkl", "rb") as file:
     model_linear = pkl.load(file)
 
+with open(f"{path}\\random_forest.pkl", "rb")as file:
+    model_random_forest = pkl.load(file)
+
 with open(f"{path}\\polynomial2.pkl", "rb")as file:
     model_polynomial2 = pkl.load(file)
 
@@ -35,13 +38,13 @@ dataset.drop(columns='Date', inplace=True)
 
 print(dataset)
 
-
 y = dataset['Snow depth [cm]']
 X = dataset[['Weeknr', 'Average temperature [°C]','Cloud cover [1/8]','Direct solar radiation mean [W/m2]']]
 
 print(X.shape)
 
 predictions_linear = model_linear.predict(X)
+predictions_random_forest = model_random_forest.predict(X)
 predictions_polynomial2 = model_polynomial2.predict(X)
 predictions_polynomial3 = model_polynomial3.predict(X)
 predictions_polynomial6 = model_polynomial6.predict(X)
@@ -49,6 +52,11 @@ predictions_polynomial6 = model_polynomial6.predict(X)
 print("Linear Model:")
 print("Mean Squared Error:", mean_squared_error(y, predictions_linear))
 print("R-squared:", r2_score(y, predictions_linear))
+print("\n")
+
+print("Random Forest Model:")
+print("Mean Squared Error:", mean_squared_error(y, predictions_random_forest))
+print("R-squared:", r2_score(y, predictions_random_forest))
 print("\n")
 
 print("Polynomial (degree 2) Model:")
@@ -68,28 +76,35 @@ print("\n")
 
 plt.figure(figsize=(12, 8))
 
-plt.subplot(2, 2, 1)
+plt.subplot(3, 2, 1)
 plt.scatter(X['Weeknr'], predictions_linear, color='red', alpha=0.1)
 plt.scatter(X['Weeknr'], y, color='blue', alpha=0.1)
 plt.xlabel('Weeknr')
 plt.ylabel('Snow depth [cm]')
 plt.title('Linear Regression Prediction vs Actual')
 
-plt.subplot(2, 2, 2)
+plt.subplot(3, 2, 2)
+plt.scatter(X['Weeknr'], predictions_random_forest, color='red', alpha=0.1)
+plt.scatter(X['Weeknr'], y, color='blue', alpha=0.1)
+plt.xlabel('Weeknr')
+plt.ylabel('Snow depth [cm]')
+plt.title('Random Forest Regression Prediction vs Actual')
+
+plt.subplot(3, 2, 3)
 plt.scatter(X['Weeknr'], predictions_polynomial2, color='red', alpha=0.1)
 plt.scatter(X['Weeknr'], y, color='blue', alpha=0.1)
 plt.xlabel('Weeknr')
 plt.ylabel('Snow depth [cm]')
 plt.title('Linear Regression Prediction vs Actual')
 
-plt.subplot(2, 2, 3)
+plt.subplot(3, 2, 4)
 plt.scatter(X['Weeknr'], predictions_polynomial3, color='red', alpha=0.1)
 plt.scatter(X['Weeknr'], y, color='blue', alpha=0.1)
 plt.xlabel('Weeknr')
 plt.ylabel('Snow depth [cm]')
 plt.title('Linear Regression Prediction vs Actual')
 
-plt.subplot(2, 2, 4)
+plt.subplot(3, 2, 5)
 plt.scatter(X['Weeknr'], predictions_polynomial6, color='red', alpha=0.1)
 plt.scatter(X['Weeknr'], y, color='blue', alpha=0.1)
 plt.xlabel('Weeknr')
