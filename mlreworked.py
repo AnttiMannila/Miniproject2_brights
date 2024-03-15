@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import mean_squared_error, r2_score
@@ -24,7 +25,7 @@ dataset = dataset.dropna(axis=0, how='any')
 dataset['Date'] = pd.to_datetime(dataset['Date'])
 dataset['Weeknr'] = dataset['Date'].dt.isocalendar().week
 dataset['Snow depth [cm]'] = dataset['Snow depth [cm]'].replace(-1, 0)
-dataset.drop(columns='Date')
+dataset.drop(columns='Date', inplace=True)
 
 y = dataset['Snow depth [cm]']
 X = dataset[['Weeknr', 'Average temperature [°C]', 'Cloud cover [1/8]','Direct solar radiation mean [W/m2]']]
@@ -46,6 +47,23 @@ print(f"Linear Regression Test MSE: {mse_test}")
 print(f"Linear Regression Train R2 Score: {r2_train}")
 print(f"Linear Regression Test R2 Score: {r2_test}")
 with open(f"{path}\\linear.pkl", 'wb') as file:
+    pkl.dump(model_linear, file)
+
+model_forest = RandomForestRegressor(n_estimators=100)
+model_forest.fit(X_train, y_train)
+y_pred_forest_train = model_forest.predict(X_train)
+y_pred_forest_test = model_forest.predict(X_test)
+y_pred_forest_train = np.maximum(y_pred_forest_train, 0)
+y_pred_forest_test = np.maximum(y_pred_forest_test, 0)
+mse_train = mean_squared_error(y_train, y_pred_forest_train)
+mse_test = mean_squared_error(y_test, y_pred_forest_test)
+r2_train = r2_score(y_train, y_pred_forest_train)
+r2_test = r2_score(y_test, y_pred_forest_test)
+print(f"Random Forest Regression Train MSE: {mse_train}")
+print(f"Random Forest Regression Test MSE: {mse_test}")
+print(f"Random Forest Regression Train R2 Score: {r2_train}")
+print(f"Random Forest Regression Test R2 Score: {r2_test}")
+with open(f"{path}\\random_forest.pkl", 'wb') as file:
     pkl.dump(model_linear, file)
 
 models = {}
@@ -74,15 +92,22 @@ for i, model in models.items():
 
 plt.figure(figsize=(12, 8))
 
-plt.subplot(2, 2, 1)
+plt.subplot(3, 2, 1)
 plt.scatter(X_test['Weeknr'], y_pred_linear_test, color='red', alpha=0.1)
 plt.scatter(X_test['Weeknr'], y_test, color='blue', alpha=0.1)
 plt.xlabel('Weeknr')
 plt.ylabel('Snow depth [cm]')
 plt.title('Linear Regression Prediction vs Actual')
 
-for j, (i, model) in enumerate(models.items(), start=2):
-    plt.subplot(2, 2, j)
+plt.subplot(3, 2, 2)
+plt.scatter(X_test['Weeknr'], y_pred_forest_test, color='red', alpha=0.1)
+plt.scatter(X_test['Weeknr'], y_test, color='blue', alpha=0.1)
+plt.xlabel ('Weeknr')
+plt.ylabel('Snow depth [cm]')
+plt.title('Random Forest Regression Prediction vs Actual')
+
+for j, (i, model) in enumerate(models.items(), start=3):
+    plt.subplot(3, 2, j)
     y_pred = model.predict(X_test)
     plt.scatter(X_test['Weeknr'], y_pred, color='red', alpha=0.1)
     plt.scatter(X_test['Weeknr'], y_test, color='blue', alpha=0.1)
