@@ -44,10 +44,16 @@ predictions = {}
 for venue in additional_venues:
     extrapolated_data = np.array([generate_features_for_date(date, data_additional) for date in future_dates])
     predictions_linear = model_linear.predict(extrapolated_data)
+    df = pd.DataFrame(predictions_linear)
+    df.to_csv('linear_predictions_snowdepthfor20years.csv')
     predictions_forest = model_forest.predict(extrapolated_data)
+    df = pd.DataFrame(predictions_forest)
+    df.to_csv('predictions_forest_snowdepthfor20years.csv')
     predictions_polynomial = {}
     for degree, model in models_polynomial.items():
         predictions_polynomial[degree] = model.predict(extrapolated_data)
+        df = pd.DataFrame(predictions_polynomial[degree])
+        df.to_csv(f'predictions_polynomial{degree}_snowdepthfor20years.csv')
     predictions[venue] = {'Linear': predictions_linear, 'Random Forest': predictions_forest, 'Polynomial': predictions_polynomial}
 
 plt.figure(figsize=(12, 8))
@@ -77,9 +83,17 @@ for model_name, model_predictions in [('Linear Regression', predictions_linear[:
             weeks_low_snow_20cm.add(i + 1)
         elif np.all(preds < 20):
             weeks_low_snow_20cm.add(i + 1)
+        df = pd.DataFrame(weeks_low_snow_10cm)
+        df.to_csv('weeknrs_under_10cm.csv')
+        df = pd.DataFrame(weeks_low_snow_20cm)
+        df.to_csv('weeknrs_under_20cm.csv')
 
 weeks_high_snow_10cm = set(range(1, 53)) - weeks_low_snow_10cm
 weeks_high_snow_20cm = set(range(1, 53)) - weeks_low_snow_20cm
+df = pd.DataFrame(weeks_high_snow_10cm)
+df.to_csv('weeknrs_overorequal_10cm.csv')
+df = pd.DataFrame(weeks_high_snow_20cm)
+df.to_csv('weeknrs_overorequal_20cm.csv')
 
 if weeks_low_snow_10cm:
     print(f"Weeks with predicted snow depth < 10cm: {sorted(weeks_low_snow_10cm)}")
